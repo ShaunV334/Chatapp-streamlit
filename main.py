@@ -12,8 +12,7 @@ import requests
 
 
 # Firebase configuration
-
-cred = credentials.Certificate('D:\chatapp\dbms-test-c9871-55e52fdea801.json')
+cred = credentials.Certificate(r'D:\chatapp\dbms-test-c9871-55e52fdea801.json')
 
 if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
@@ -114,7 +113,10 @@ elif choice == "Chat":
             # Display chat messages in the UI
             for msg in messages:
                 message_data = msg.to_dict()
-                with st.chat_message(message_data["role"]):
+                role = message_data["role"]
+
+                # Display messages from the logged-in user on one side and from friends on the other side
+                with st.chat_message(role):
                     st.markdown(message_data["content"])
 
             # Accept user input for chat messages
@@ -127,20 +129,6 @@ elif choice == "Chat":
                 messages_ref.add({
                     'content': prompt,
                     'role': 'user',
-                    'timestamp': firestore.SERVER_TIMESTAMP  # Automatically set timestamp
-                })
-
-                # Placeholder for bot response
-                response_content = f"Echo: {prompt}"  
-
-                # Display assistant response in chat message container
-                with st.chat_message("assistant"):
-                    st.markdown(response_content)
-
-                # Add assistant response to Firestore (optional)
-                messages_ref.add({
-                    'content': response_content,
-                    'role': 'assistant',
                     'timestamp': firestore.SERVER_TIMESTAMP  # Automatically set timestamp
                 })
     else:
